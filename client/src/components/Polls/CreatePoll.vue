@@ -36,12 +36,11 @@ export default {
   },
   methods: {
     async create () {
-      const poll = (await PollService.create({
+      await PollService.create({
         userId: 1,
         title: this.title,
         options: this.options
-      })).data
-      console.log(poll)
+      })
     }
   }
 }

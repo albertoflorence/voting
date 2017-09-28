@@ -1,5 +1,6 @@
 const {Poll, User, Option} = require('../models')
 const Promise = require('bluebird')
+const VotesController = require('./VotesController')
 
 module.exports = {
   async index (req, res) {
@@ -12,7 +13,8 @@ module.exports = {
         where : where,
         include: [
           { 
-            model: User
+            model: User,
+            attributes: ['email']
           },
           {
             model: Option,
@@ -23,14 +25,13 @@ module.exports = {
       res.send(polls)
     } catch (err) {
       res.send({
-        error: "an error has occured trying to fetch the poll" + err
+        error: "an error has occured trying to fetch the poll"
       })
     }
   },
   async create (req, res) {
     try {
       const {userId, title, options} = req.body
-      console.log(userId)
       const poll = await Poll.create({
         UserId: userId,
         title: title,

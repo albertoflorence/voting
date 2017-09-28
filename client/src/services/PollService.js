@@ -7,7 +7,4 @@ export default {
   index (userId) {
     return Api().get('polls', userId)
   }
-  vote (itemId) {
-    return Api().put('polls/', itemId)
-  }
 }

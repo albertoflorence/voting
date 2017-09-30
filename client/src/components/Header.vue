@@ -23,9 +23,12 @@
         Log In
       </v-btn>
     </v-toolbar-items>
-    <v-toolbar-items>
+    <v-toolbar-items v-if="isUserLoggedIn">
       <v-btn flat
-       v-if="isUserLoggedIn"
+        :to="{name: 'poll-user'}">
+        My Polls
+      </v-btn>
+      <v-btn flat
         @click="logout">
         Log Out
       </v-btn>

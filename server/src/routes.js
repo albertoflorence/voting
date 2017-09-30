@@ -16,12 +16,24 @@ module.exports = (app) => {
     isAuthenticated,
     PollsController.create)
   app.get('/polls',
+    PollsController.index)
+  app.get('/polls/:pollId',
+    isAuthenticated,
+    PollsController.show)
+  app.get('/polls/user/0',
     isAuthenticated,
     PollsController.index)
+  app.delete('/polls/:pollId',
+    isAuthenticated,
+    PollsController.delete)
+  app.put('/polls/:pollId/add-option',
+    PollsController.addOption)
 
   app.post('/votes',
+    isAuthenticated,
     VotesController.vote)
   app.get('/votes',
+    isAuthenticated,
     VotesController.index)
   app.get('/votes/count',
     VotesController.count)

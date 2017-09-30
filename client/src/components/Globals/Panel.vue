@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <v-card>
     <div class="white elevation-2">
       <v-toolbar flat dense class="light-blue" dark>
         <v-toolbar-title>{{title}}</v-toolbar-title>
-        <slot name="action">
-        </slot>
+        <v-spacer></v-spacer>
+        <slot name="action"> </slot>
       </v-toolbar>
       <div class="pl-4 pr-4 pt-2 pb-2">
         <slot>
@@ -12,7 +12,7 @@
         </slot>
       </div>
     </div>        
-  </div>
+  </v-card>
 </template>
 
 <script>

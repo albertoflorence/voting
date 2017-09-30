@@ -1,69 +1,102 @@
 <template>
-  <v-layout>
-      <v-flex xs6 offset-xs3>
-        <panel :title="poll.title">
-          <poll-options
-            v-for="option in poll.options"
-            :option="option"
-            :isVoted="option.id === votedOption"
-            :count="countOptions[option.id] || 0"
-            :vote="vote"
-            :key="option.id">
-          </poll-options>
-          <span>Created by: {{poll.User.email}} </span>
-          <span>Votes: {{countPoll}} </span>
-        </panel>
-      </v-flex>
-    </v-layout>
+  <v-layout
+    v-if="poll">
+    <v-flex xs4 offset-xs5>
+      <panel 
+        :title="poll.title"
+        v-if="!isVoted">
+        <div
+          slot="action">
+          <v-btn
+            icon
+            v-if="isUserLoggedIn"
+            :to="{
+              name: 'poll-create'
+            }">
+            <v-icon>add</v-icon>
+          </v-btn>
+          <v-btn
+            icon
+            @click.native.stop="dialog = !dialog"
+              >
+            <v-icon>share</v-icon>
+          </v-btn>
+        </div>
+        <poll-options 
+          :options="poll.options"
+          v-on:addOption="addOption"
+          v-on:vote="vote"
+        >
+          <div class="right-text">
+            <small class="grey--text">created by: {{poll.User.name}} </small>
+          </div>
+        </poll-options>
+      </panel>
+      <poll-chart 
+        :poll="poll"
+        v-if="isVoted"
+      />
+    </v-flex>
+    <v-dialog
+      absolute v-model="dialog">
+      <v-card>
+        <v-card-text>
+          <v-text-field readonly v-model="url"></v-text-field>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+  </v-layout>
 </template>
 
 <script>
 import PollOptions from './PollOptions'
+import PollChart from './PollChart'
 import VoteService from '@/services/VoteService'
-
+import PollService from '@/services/PollService'
+import {mapState} from 'vuex'
 export default {
+  computed: {
+    ...mapState([
+      'isUserLoggedIn'
+    ])
+  },
   props: [
-    'poll'
+    'initialPoll'
   ],
   data () {
     return {
-      countPoll: null,
-      countOptions: {},
-      votedOption: null
+      url: 'http://localhost:8080/#/polls/' + this.initialPoll.id,
+      optionName: '',
+      isVoted: false,
+      poll: this.initialPoll,
+      dialog: false
     }
   },
   methods: {
     async vote (optionId) {
-      const vote = (await VoteService.vote({
+      if (!optionId) {
+        return
+      }
+      (await VoteService.vote({
         optionId: optionId
       })).data
-      this.votedOption = vote.OptionId
-
-      const response = (await VoteService.count({
-        pollId: this.poll.id
-      })).data
-      this.countPoll = response.countPoll
-      this.countOptions = response.countOptions
+      this.isVoted = true
+    },
+    async addOption (optionName) {
+      this.poll = (await PollService.addOption(this.poll.id, optionName)).data
     }
   },
-  async mounted () {
-    const vote = (await VoteService.index({
-      pollId: this.poll.id
-    })).data
-    this.votedOption = vote.OptionId
-
-    const response = (await VoteService.count({
-      pollId: this.poll.id
-    })).data
-    this.countPoll = response.countPoll
-    this.countOptions = response.countOptions
-  },
   components: {
-    PollOptions
+    PollOptions,
+    PollChart
   }
 }
 </script>
 
 <style scoped>
+
+.right-text {
+  text-align: right;
+}
 
 </style>

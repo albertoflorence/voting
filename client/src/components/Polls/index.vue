@@ -1,11 +1,16 @@
 <template>
   <div>
     <poll
-      v-for="poll in polls"
-      :key="poll.id"
-      :poll="poll"
-      >
+      v-if="poll"
+      :initialPoll="poll">
     </poll>
+    <v-btn
+      class="randomPoll light-blue"
+      dark
+      v-if="poll" 
+      @click="getRandom"> 
+      Random Poll
+    </v-btn>
   </div>
 </template>
 
@@ -15,11 +20,16 @@ import Poll from './Poll'
 export default {
   data () {
     return {
-      polls: []
+      poll: null
+    }
+  },
+  methods: {
+    async getRandom () {
+      this.poll = (await PollService.show('random')).data
     }
   },
   async mounted () {
-    this.polls = (await PollService.index()).data
+    this.poll = (await PollService.show('random')).data
   },
   components: {
     Poll
@@ -28,5 +38,10 @@ export default {
 </script>
 
 <style scoped>
+.randomPoll {
+  margin-top: 50px;
+  width: 300px;
+  height: 80px;
+}
 
 </style>

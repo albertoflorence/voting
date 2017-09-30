@@ -4,6 +4,12 @@
       <panel :title="title">
         <v-form>
           <v-text-field
+            v-if="title === 'Register'"
+            label="Name"
+            v-model="userName"
+            required
+          ></v-text-field>
+          <v-text-field
             label="Email"
             v-model="email"
             required
@@ -41,6 +47,7 @@ export default {
     return {
       email: '',
       password: '',
+      userName: '',
       error: null
     }
   },
@@ -50,7 +57,8 @@ export default {
         this.error = null
         const response = await AuthenticationService[this.act]({
           email: this.email,
-          password: this.password
+          password: this.password,
+          name: this.userName
         })
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
